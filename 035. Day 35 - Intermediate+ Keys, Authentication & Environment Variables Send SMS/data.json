@@ -1,0 +1,175 @@
+{
+    "cod": "200",
+    "message": 0,
+    "cnt": 4,
+    "list": [
+        {
+            "dt": 1765108800,
+            "main": {
+                "temp": 296.89,
+                "feels_like": 297.64,
+                "temp_min": 296.36,
+                "temp_max": 296.89,
+                "pressure": 1008,
+                "sea_level": 1008,
+                "grnd_level": 976,
+                "humidity": 89,
+                "temp_kf": 0.53
+            },
+            "weather": [
+                {
+                    "id": 503,
+                    "main": "Rain",
+                    "description": "very heavy rain",
+                    "icon": "10n"
+                }
+            ],
+            "clouds": {
+                "all": 100
+            },
+            "wind": {
+                "speed": 1.48,
+                "deg": 277,
+                "gust": 2.13
+            },
+            "pop": 1,
+            "rain": {
+                "3h": 118.09
+            },
+            "sys": {
+                "pod": "n"
+            },
+            "dt_txt": "2025-12-07 12:00:00"
+        },
+        {
+            "dt": 1765119600,
+            "main": {
+                "temp": 295.68,
+                "feels_like": 296.47,
+                "temp_min": 294.94,
+                "temp_max": 295.68,
+                "pressure": 1009,
+                "sea_level": 1009,
+                "grnd_level": 977,
+                "humidity": 95,
+                "temp_kf": 0.74
+            },
+            "weather": [
+                {
+                    "id": 503,
+                    "main": "Rain",
+                    "description": "very heavy rain",
+                    "icon": "10n"
+                }
+            ],
+            "clouds": {
+                "all": 100
+            },
+            "wind": {
+                "speed": 1.02,
+                "deg": 28,
+                "gust": 5.45
+            },
+            "visibility": 965,
+            "pop": 1,
+            "rain": {
+                "3h": 54.9
+            },
+            "sys": {
+                "pod": "n"
+            },
+            "dt_txt": "2025-12-07 15:00:00"
+        },
+        {
+            "dt": 1765130400,
+            "main": {
+                "temp": 294.93,
+                "feels_like": 295.72,
+                "temp_min": 294.93,
+                "temp_max": 294.93,
+                "pressure": 1008,
+                "sea_level": 1008,
+                "grnd_level": 975,
+                "humidity": 98,
+                "temp_kf": 0
+            },
+            "weather": [
+                {
+                    "id": 502,
+                    "main": "Rain",
+                    "description": "heavy intensity rain",
+                    "icon": "10n"
+                }
+            ],
+            "clouds": {
+                "all": 100
+            },
+            "wind": {
+                "speed": 1.95,
+                "deg": 72,
+                "gust": 6.87
+            },
+            "visibility": 4172,
+            "pop": 1,
+            "rain": {
+                "3h": 29.17
+            },
+            "sys": {
+                "pod": "n"
+            },
+            "dt_txt": "2025-12-07 18:00:00"
+        },
+        {
+            "dt": 1765141200,
+            "main": {
+                "temp": 295.33,
+                "feels_like": 296.19,
+                "temp_min": 295.33,
+                "temp_max": 295.33,
+                "pressure": 1008,
+                "sea_level": 1008,
+                "grnd_level": 975,
+                "humidity": 99,
+                "temp_kf": 0
+            },
+            "weather": [
+                {
+                    "id": 502,
+                    "main": "Rain",
+                    "description": "heavy intensity rain",
+                    "icon": "10n"
+                }
+            ],
+            "clouds": {
+                "all": 100
+            },
+            "wind": {
+                "speed": 1.82,
+                "deg": 76,
+                "gust": 6.87
+            },
+            "visibility": 60,
+            "pop": 1,
+            "rain": {
+                "3h": 33.94
+            },
+            "sys": {
+                "pod": "n"
+            },
+            "dt_txt": "2025-12-07 21:00:00"
+        }
+    ],
+    "city": {
+        "id": 1703450,
+        "name": "Majayjay",
+        "coord": {
+            "lat": 14.1407,
+            "lon": 121.4692
+        },
+        "country": "PH",
+        "population": 11412,
+        "timezone": 28800,
+        "sunrise": 1765058758,
+        "sunset": 1765099518
+    }
+}
