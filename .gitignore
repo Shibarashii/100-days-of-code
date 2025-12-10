@@ -2,6 +2,7 @@
 .env
 .venv
 .vscode
+*.credentials.json
 application_default_credentials.json
 credentials.json
 service_account.json
