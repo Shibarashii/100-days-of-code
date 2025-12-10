@@ -1,0 +1,79 @@
+{
+  "meta": {
+    "count": 5,
+    "links": {
+      "self": "https://test.api.amadeus.com/v1/reference-data/locations/cities?keyword=PARIS&max=5"
+    }
+  },
+  "data": [
+    {
+      "type": "location",
+      "subType": "city",
+      "name": "Paris",
+      "iataCode": "PAR",
+      "address": {
+        "countryCode": "FR",
+        "stateCode": "FR-75"
+      },
+      "geoCode": {
+        "latitude": 48.85341,
+        "longitude": 2.3488
+      }
+    },
+    {
+      "type": "location",
+      "subType": "city",
+      "name": "Le Touquet-Paris-Plage",
+      "iataCode": "LTQ",
+      "address": {
+        "countryCode": "FR",
+        "stateCode": "FR-62"
+      },
+      "geoCode": {
+        "latitude": 50.52432,
+        "longitude": 1.58571
+      }
+    },
+    {
+      "type": "location",
+      "subType": "city",
+      "name": "Paris",
+      "iataCode": "PHT",
+      "address": {
+        "countryCode": "US",
+        "stateCode": "US-TN"
+      },
+      "geoCode": {
+        "latitude": 36.302,
+        "longitude": -88.32671
+      }
+    },
+    {
+      "type": "location",
+      "subType": "city",
+      "name": "Paris",
+      "iataCode": "PRX",
+      "address": {
+        "countryCode": "US",
+        "stateCode": "US-TX"
+      },
+      "geoCode": {
+        "latitude": 33.66094,
+        "longitude": -95.55551
+      }
+    },
+    {
+      "type": "location",
+      "subType": "city",
+      "name": "Paris",
+      "address": {
+        "countryCode": "CA",
+        "stateCode": "CA-ON"
+      },
+      "geoCode": {
+        "latitude": 43.2,
+        "longitude": -80.38333
+      }
+    }
+  ]
+}
