@@ -93,7 +93,7 @@ def find_cheap_flights():
 
         is_price_cheaper = lowest_price < float(prices[i])
         if is_price_cheaper:
-            message = f"Low price alert:! Only £{lowest_price} only to fly from {origin_location} to {dest}, from {departure_date} to {return_date}"
+            message = f"Low price alert! Only £{lowest_price} only to fly from {origin_location} to {dest}, from {departure_date} to {return_date}"
             print(message)
             NotificationManager.twilio_notify(message)
 
