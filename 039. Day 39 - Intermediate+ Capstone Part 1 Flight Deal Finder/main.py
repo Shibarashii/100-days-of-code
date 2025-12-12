@@ -6,6 +6,8 @@ from amadeus import AmadeusClient
 import json
 import os
 import datetime
+from amadeus import FlightData
+from notification import NotificationManager
 
 load_dotenv()
 root = Path(__file__).parent
@@ -22,8 +24,11 @@ def print_rows(rows):
         print(row)
 
 
-def save_json(file):
-    with open(root/"temp.json", "w") as f:
+def save_json(file, file_name: str | None = None):
+    if file_name is None:
+        file_name = "temp.json"
+
+    with open(root/file_name, "w") as f:
         json.dump(obj=file, fp=f, indent=2)
 
 
@@ -32,7 +37,7 @@ def fill_iata_columns():
     iata_codes = []
     print("Filling IATA Columns...")
     for city in cities:
-        response = amadeus.city_search(city[0], max=3).json()
+        response = amadeus.city_search(city[0], max=3)
         data = response["data"][0]
         iata_code = data["iataCode"]
         iata_codes.append([iata_code])
@@ -42,24 +47,59 @@ def fill_iata_columns():
         print("Successfully updated IATA Codes in Google Sheets.")
 
 
-def get_iata_codes():
-    response = gsheet.get_values("B2:B")["values"]  # type: ignore
-    iata_codes = []
-    for row in response:
-        iata_codes.append(row[0])
-    return iata_codes
+def get_from_to_dates() -> tuple[str, str]:
+    from_date = datetime.datetime.now()
+    to_date = from_date + datetime.timedelta(days=30*6)
+
+    from_date, to_date = from_date.strftime(
+        "%Y-%m-%d"), to_date.strftime("%Y-%m-%d")
+
+    return from_date, to_date
+
+
+def get_sheet_values() -> tuple[list, list, list]:
+    values = gsheet.get_values("A2:C")["values"]  # type: ignore
+    cities, iata_codes, prices = [], [], []
+    for city, code, price in values:
+        cities.append(city)
+        iata_codes.append(code)
+        prices.append(int(price))
+
+    return cities, iata_codes, prices
+
+
+def find_cheap_flights():
+    """Searches for flights cheaper than the prices define in Google Sheet"""
+    departure_date, return_date = get_from_to_dates()
+    cities, iata_codes, prices = get_sheet_values()
+
+    origin_location = input("Enter IATA code to depart from: ").upper()
+
+    for i, dest in enumerate(iata_codes):
+        flight_data = FlightData(
+            origin_location, dest, departure_date, return_date)
+        response = amadeus.search_offers(flight_data)
+        data = response["data"]
+        if not data:
+            print(
+                f"Flight offers `{origin_location} to {dest}` not found.")
+            continue
+
+        # save_json(response, f"temp{i}.json")
+        first_item = data[0]
+        id = first_item["id"]
+        lowest_price = float(first_item["price"]["total"])
+        print(f"Lowest price: £{lowest_price}")
+
+        is_price_cheaper = lowest_price < float(prices[i])
+        if is_price_cheaper:
+            message = f"Low price alert:! Only £{lowest_price} only to fly from {origin_location} to {dest}, from {departure_date} to {return_date}"
+            print(message)
+            NotificationManager.twilio_notify(message)
 
 
 def main():
-    iata_codes = get_iata_codes()
-    print(iata_codes)
-    departure_date = datetime.datetime.now()
-    return_date = departure_date + datetime.timedelta(days=30*6)
-
-    departure_date, return_date = departure_date.strftime(
-        "%Y-%m-%d"), return_date.strftime("%Y-%m-%d")
-    amadeus.search_offers(
-        "SYD", "BKK", departure_date, return_date)
+    find_cheap_flights()
 
 
 if __name__ == "__main__":
