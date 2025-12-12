@@ -10,6 +10,15 @@ load_dotenv()
 root = Path(__file__).parent
 
 
+class FlightData:
+    def __init__(self, origin: str, dest: str, departure_date: str, return_date: str, currency_code: str = "GBP"):
+        self.origin = origin
+        self.destination = dest
+        self.departure_date = departure_date
+        self.return_date = return_date
+        self.currency_code = currency_code
+
+
 class AmadeusClient:
     def __init__(self):
         self.server = "https://test.api.amadeus.com"
@@ -19,6 +28,7 @@ class AmadeusClient:
         self.refresh_access_token()
 
     def _get_credentials(self) -> dict:
+        """Load credentials from saved json file"""
         cred_path = root/"amadeus.credentials.json"
         if not os.path.exists(cred_path):
             return {}  # Return empty dict instead of raising error
@@ -78,7 +88,8 @@ class AmadeusClient:
         self.auth_headers = self._build_auth_headers()
         return response
 
-    def city_search(self, keyword: str, country_code: str | None = None, max: int | None = None, include: str | None = None):
+    def city_search(self, keyword: str, country_code: str | None = None, max: int | None = None, include: str | None = None) -> dict:
+        """Search for a city using keyword or country code"""
         endpoint = f"{self.server}/v1/reference-data/locations/cities"
         params = {
             "keyword": keyword.upper(),
@@ -92,28 +103,25 @@ class AmadeusClient:
             url=endpoint, params=params, headers=self.auth_headers)
         response.raise_for_status()
 
-        if 200 <= response.status_code < 300:
-            print(f"Successfully searched cities for: {keyword.title()}")
-        return response
+        return response.json()
 
-    def search_offers(self, origin_iata: str, dest_iata: str, from_time: str, to_time: str):
+    def search_offers(self, flight_data: FlightData) -> dict:
+        """Search for flight offers"""
         endpoint = f"{self.server}/v2/shopping/flight-offers"
         params = {
-            "originLocationCode": origin_iata,
-            "destinationLocationCode": dest_iata,
-            "departureDate": from_time,
-            "returnDate": to_time,
+            "originLocationCode": flight_data.origin,
+            "destinationLocationCode": flight_data.destination,
+            "departureDate": flight_data.departure_date,
+            "returnDate": flight_data.return_date,
             "adults": 1,
             "nonStop": "true",
-            "currencyCode": "GBP",
+            "currencyCode": flight_data.currency_code,
             "max": 5
         }
 
-        print(f"Searching flights: {params}")
+        print(
+            f"\nSearching flights from {flight_data.origin} to {flight_data.destination}...")
         response = requests.get(
             url=endpoint, params=params, headers=self.auth_headers)
-        print(response.json())
 
-        if 200 <= response.status_code < 300:
-            print("Successfully retrieved flight offers")
-        return response
+        return response.json()
