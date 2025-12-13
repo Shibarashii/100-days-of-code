@@ -11,12 +11,16 @@ root = Path(__file__).parent
 
 
 class FlightData:
-    def __init__(self, origin: str, dest: str, departure_date: str, return_date: str, currency_code: str = "GBP"):
+    def __init__(self, origin: str, dest: str, departure_date: str, return_date: str, currency_code: str = "GBP", is_direct: bool = True):
         self.origin = origin
         self.destination = dest
         self.departure_date = departure_date
         self.return_date = return_date
         self.currency_code = currency_code
+        self.is_direct = is_direct
+
+    def __str__(self) -> str:
+        return str(self.__dict__)
 
 
 class AmadeusClient:
@@ -114,14 +118,13 @@ class AmadeusClient:
             "departureDate": flight_data.departure_date,
             "returnDate": flight_data.return_date,
             "adults": 1,
-            "nonStop": "true",
+            "nonStop": "true" if flight_data.is_direct else "false",
             "currencyCode": flight_data.currency_code,
             "max": 5
         }
 
-        print(
-            f"\nSearching flights from {flight_data.origin} to {flight_data.destination}...")
         response = requests.get(
             url=endpoint, params=params, headers=self.auth_headers)
+        response.raise_for_status()
 
         return response.json()

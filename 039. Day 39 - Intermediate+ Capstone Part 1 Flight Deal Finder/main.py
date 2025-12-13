@@ -13,7 +13,9 @@ load_dotenv()
 root = Path(__file__).parent
 SPREADSHEET_ID = os.getenv("SPREADSHEET_ID")
 SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
-full_range = "A:C"
+prices_sheet = "Prices!"
+users_sheet = "Users!"
+full_range_prices = f"{prices_sheet}A:C"
 
 amadeus = AmadeusClient()
 gsheet = GSheetClient(SPREADSHEET_ID, SCOPES)
@@ -33,7 +35,7 @@ def save_json(file, file_name: str | None = None):
 
 
 def fill_iata_columns():
-    cities = gsheet.get_values("A2:A")["values"]  # type: ignore
+    cities = gsheet.get_values(f"{prices_sheet}A2:A")["values"]  # type: ignore
     iata_codes = []
     print("Filling IATA Columns...")
     for city in cities:
@@ -42,7 +44,8 @@ def fill_iata_columns():
         iata_code = data["iataCode"]
         iata_codes.append([iata_code])
 
-    result = gsheet.update_values("B2:B", iata_codes, "USER_ENTERED")
+    result = gsheet.update_values(
+        f"{prices_sheet}B2:B", iata_codes, "USER_ENTERED")
     if result:
         print("Successfully updated IATA Codes in Google Sheets.")
 
@@ -57,49 +60,123 @@ def get_from_to_dates() -> tuple[str, str]:
     return from_date, to_date
 
 
-def get_sheet_values() -> tuple[list, list, list]:
-    values = gsheet.get_values("A2:C")["values"]  # type: ignore
-    cities, iata_codes, prices = [], [], []
-    for city, code, price in values:
-        cities.append(city)
-        iata_codes.append(code)
-        prices.append(int(price))
-
-    return cities, iata_codes, prices
+def get_prices_sheet():
+    values = gsheet.get_values(f"{prices_sheet}A2:C")["values"]  # type: ignore
+    return values
 
 
-def find_cheap_flights():
-    """Searches for flights cheaper than the prices define in Google Sheet"""
-    departure_date, return_date = get_from_to_dates()
-    cities, iata_codes, prices = get_sheet_values()
+def get_users_sheet():
+    values = gsheet.get_values(f"{users_sheet}B2:D")["values"]  # type: ignore
+    return values
 
-    origin_location = input("Enter IATA code to depart from: ").upper()
 
-    for i, dest in enumerate(iata_codes):
-        flight_data = FlightData(
-            origin_location, dest, departure_date, return_date)
+def get_flight_data(flight_data):
+    """
+    Helper: Tries to find direct flights. If none, tries indirect.
+    Returns: The list of flight offers, or None if nothing found.
+    """
+    # 1. Try Direct
+    try:
+        flight_data.is_direct = True
+        print(
+            f"\nSearching direct: {flight_data.origin} -> {flight_data.destination}...")
         response = amadeus.search_offers(flight_data)
-        data = response["data"]
+
+        if response["data"]:
+            return response["data"]
+
+        # 2. Fallback to Indirect
+        print(f"Direct flights not found. Trying indirect...")
+        flight_data.is_direct = False
+        response = amadeus.search_offers(flight_data)
+
+        if response["data"]:
+            print("Indirect flights found!")
+            return response["data"]
+
+        print("No flights found (direct or indirect).")
+        return None
+    except Exception as e:
+        print(f"Error: {e}")
+
+
+def process_flight_details(flight_offer):
+    """
+    Helper: Parses the JSON, prints route segments.
+    Returns: (price, route_string, destination_code)
+    """
+    price = float(flight_offer["price"]["total"])
+
+    segments = flight_offer["itineraries"][0]["segments"]
+
+    # Grab the final destination code (last segment's arrival)
+    dest = segments[-1]["arrival"]["iataCode"]
+    origin = segments[0]["departure"]["iataCode"]
+
+    # Build the route string
+    route_str = " -> ".join([s["departure"]["iataCode"] for s in segments])
+    route_str += f" -> {dest}"
+
+    print(f"Route: {route_str}")
+    print(f"Price: £{price}")
+
+    # Return all three
+    return price, route_str, dest, origin
+
+
+def send_email_to_users(msg: str):
+    users_sheet = get_users_sheet()
+    for name, surname, email in users_sheet:
+        subject = "Cheap flight deals!"
+        body = f"Greetings, {name} {surname}! {msg}"
+        message = f"Subject:{subject}\n\n{body}"
+        message = message.encode("utf-8")
+        NotificationManager.send_email(message, email)
+
+
+def find_cheap_flights(origin, origin_iata):
+
+    departure_date, return_date = get_from_to_dates()
+    prices_sheet = get_prices_sheet()
+
+    for city, code, price in prices_sheet:
+        flight_data = FlightData(
+            origin=origin_iata,
+            dest=code,
+            departure_date=departure_date,
+            return_date=return_date,
+            currency_code="GBP"
+        )
+
+        data = get_flight_data(flight_data)
+
         if not data:
-            print(
-                f"Flight offers `{origin_location} to {dest}` not found.")
             continue
 
-        # save_json(response, f"temp{i}.json")
-        first_item = data[0]
-        id = first_item["id"]
-        lowest_price = float(first_item["price"]["total"])
-        print(f"Lowest price: £{lowest_price}")
+        lowest_price, route_str, final_dest, origin_iata = process_flight_details(
+            data[0])
 
-        is_price_cheaper = lowest_price < float(prices[i])
-        if is_price_cheaper:
-            message = f"Low price alert! Only £{lowest_price} only to fly from {origin_location} to {dest}, from {departure_date} to {return_date}"
-            print(message)
+        target_price = float(price)
+        if lowest_price < target_price:
+            message = (f"Low price alert! Fly from {origin} ({origin_iata}) to {city} ({final_dest}) at a price of £{lowest_price}"
+                       f", which is below your target price of £{target_price}!\nRoute: {route_str}")
+            print(f"*** {message} ***")
             NotificationManager.twilio_notify(message)
+            send_email_to_users(message)
 
 
 def main():
-    find_cheap_flights()
+    while True:
+        origin = input("\nEnter city to depart from: ").title()
+        try:
+            origin_iata = amadeus.city_search(origin)["data"][0]["iataCode"]
+        except:
+            print("Invalid city. Try again.")
+            continue
+        else:
+            find_cheap_flights(origin, origin_iata)
+            print("Process finished")
+            break
 
 
 if __name__ == "__main__":

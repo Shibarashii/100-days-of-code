@@ -50,7 +50,7 @@ class GSheetClient:
                 .execute()
             )
             rows = result.get("values", [])
-            print(f"{len(rows)} rows retrieved")
+            # print(f"{len(rows)} rows retrieved")
             return result
         except HttpError as error:
             print(f"An error occurred: {error}")
@@ -65,7 +65,7 @@ class GSheetClient:
                 .execute()
             )
             ranges = result.get("valueRanges", [])
-            print(f"{len(ranges)} ranges retrieved")
+            # print(f"{len(ranges)} ranges retrieved")
             return result
         except HttpError as error:
             print(f"An error occurred: {error}")
