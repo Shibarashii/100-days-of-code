@@ -1,0 +1,1 @@
+For the main project `Scraping Top 100 Movies`, since I can't access [Empire Online](https://www.empireonline.com/movies/features/best-movies-2) because it's blocking me from scraping it, I just downloaded [Letterboxd's top 100](https://letterboxd.com/brianformo/list/top-100-of-the-21st-century-so-far/) as seen in the `top100.html`
