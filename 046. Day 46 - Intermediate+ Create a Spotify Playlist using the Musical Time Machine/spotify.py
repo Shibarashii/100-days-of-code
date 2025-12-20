@@ -2,17 +2,22 @@ from urllib.parse import urlparse, parse_qs
 import os
 from dotenv import load_dotenv
 import requests
-import time
 from pathlib import Path
 import json
 import secrets
 import webbrowser
 import base64
-
+from pathlib import Path
+import json
 
 load_dotenv()
 root = Path(__file__).parent
 credentials_path = root / "spotify.credentials.json"
+
+
+def save_to_json(data: dict):
+    with open(root/"response.json", "w") as f:
+        json.dump(obj=data, fp=f, indent=2)
 
 
 class SpotifyClient:
@@ -20,10 +25,29 @@ class SpotifyClient:
         self.auth = SpotifyAuth()
         self.username = os.getenv("SPOTIFY_USERNAME")
 
-    def create_playlist(self, name: str,
+    def create_playlist(self,
+                        name: str,
                         description: str,
                         is_public: bool = True,
-                        is_collaborative: bool = False):
+                        is_collaborative: bool = False) -> dict:
+        """
+        Create a spotify playlist.
+
+        :param name: Name of playlist
+        :type name: str
+
+        :param description: Description of playlist
+        :type description: str
+
+        :param is_public: Playlist is public or private 
+        :type is_public: bool
+
+        :param is_collaborative: Playlist is collaborative or not
+        :type is_collaborative: bool
+
+        :return: `response.json()`
+        :rtype: dict[Any, Any]
+        """
         print("Creating playlist...")
         endpoint = f"https://api.spotify.com/v1/users/{self.username}/playlists"
         query = {
@@ -36,10 +60,51 @@ class SpotifyClient:
         response = requests.post(
             url=endpoint, json=query, headers=self.auth.auth_headers)
         response.raise_for_status()
-        print(f"Successfully created playlist {name}")
+        data = response.json()
 
-    def add_to_playlist(self):
-        endpoint = "https: // api.spotify.com/v1/playlists/{playlist_id}/tracks"
+        print(f"Successfully created playlist {name}")
+        print(f"Link: {data["external_urls"]["spotify"]}")
+        print(f"Playlist ID: {data["id"]}")
+
+        return data
+
+    def add_to_playlist(self, id: str):
+        endpoint = f"https: // api.spotify.com/v1/playlists/{id}/tracks"
+
+    def search_track(self,
+                     track: str,
+                     artist: str | None = None,
+                     year: str | None = None,
+                     limit: int = 1) -> dict:
+        print("\nSearching...")
+
+        q = f"track:{track}"
+        if artist:
+            q += f" artist:{artist}"
+
+        if year:
+            q += f" year:{year}"
+
+        endpoint = "https://api.spotify.com/v1/search"
+        query = {
+            "q": q,
+            "type": "track",
+            "limit": limit
+        }
+        response = requests.get(
+            url=endpoint, params=query, headers=self.auth.auth_headers)
+        response.raise_for_status()
+        save_to_json(response.json())
+        data = response.json()["tracks"]["items"][0]
+
+        artists = data["artists"]
+
+        print("Found track!")
+        print(f"Artist: {", ".join([artist['name'] for artist in artists])}")
+        print(f"Album: {data["album"]["name"]}")
+        print(f"Spotify URI: {data["uri"]}")
+
+        return data
 
 
 class SpotifyAuth:
