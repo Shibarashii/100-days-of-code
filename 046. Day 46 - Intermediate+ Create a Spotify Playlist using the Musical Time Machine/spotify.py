@@ -68,22 +68,31 @@ class SpotifyClient:
 
         return data
 
-    def add_to_playlist(self, id: str):
-        endpoint = f"https: // api.spotify.com/v1/playlists/{id}/tracks"
+    def add_to_playlist(self, playlist_id: str, uris: list[str]):
+        print("Adding to playlist...")
+        endpoint = f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks"
+        query = {
+            "playlist_id": playlist_id,
+            'uris': uris
+        }
+
+        response = requests.post(
+            url=endpoint, json=query, headers=self.auth.auth_headers)
+        response.raise_for_status()
+        data = response.json()
+        save_to_json(data)
+        print("Successfully added to playlist!")
+        return data
 
     def search_track(self,
                      track: str,
                      artist: str | None = None,
-                     year: str | None = None,
                      limit: int = 1) -> dict:
         print("\nSearching...")
 
         q = f"track:{track}"
         if artist:
             q += f" artist:{artist}"
-
-        if year:
-            q += f" year:{year}"
 
         endpoint = "https://api.spotify.com/v1/search"
         query = {
@@ -98,11 +107,13 @@ class SpotifyClient:
         data = response.json()["tracks"]["items"][0]
 
         artists = data["artists"]
-
-        print("Found track!")
-        print(f"Artist: {", ".join([artist['name'] for artist in artists])}")
-        print(f"Album: {data["album"]["name"]}")
-        print(f"Spotify URI: {data["uri"]}")
+        if data:
+            print("Found track!")
+            print(
+                f"Artist: {", ".join([artist['name'] for artist in artists])}")
+            print(f"Album: {data["album"]["name"]}")
+        else:
+            print(f"{track} by {artist} not found.")
 
         return data
 
