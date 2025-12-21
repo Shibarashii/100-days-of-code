@@ -13,7 +13,7 @@ def prompt_date() -> str:
     """
     while True:
         date = input(
-            "What date do you want to go back to (format: YYYY-MM-DD)? ")
+            "\nWhat date do you want to go back to (format: YYYY-MM-DD)? ")
         try:
             date = str(datetime.strptime(date, "%Y-%m-%d").date())
             return date
@@ -44,6 +44,14 @@ def prompt_create_playlist(client: SpotifyClient) -> str:
 
 
 def get_tracks_from_date(date: str) -> dict[str, str]:
+    """
+    Get the tracks of the Billboards Hot100 from a specific date
+
+    :param date: Date in format `YYYY-MM-DD`.
+    :type date: str
+    :return: A dictionary containing the track as key and artist as value .
+    :rtype: dict[str, str]
+    """
     header = {
         "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"
     }
@@ -63,8 +71,8 @@ def get_tracks_from_date(date: str) -> dict[str, str]:
 
     for i, raw_track in enumerate(raw_tracks_html):
         track = raw_track.get_text().strip()
-        if artists[i] is not None:
-            tracks[track] = artists[i].get_text().strip()  # type: ignore
+        tracks[track] = artists[i].get_text().strip(  # type: ignore
+        ) if artists[i] is not None else None  # type: ignore
 
     return tracks
 
@@ -72,6 +80,16 @@ def get_tracks_from_date(date: str) -> dict[str, str]:
 def add_tracks_to_playlist(client: SpotifyClient,
                            playlist_id: str,
                            tracks: dict[str, str]):
+    """
+    Adds tracks to a playlist.
+
+    :param client: The Spotify client.
+    :type client: SpotifyClient
+    :param playlist_id: ID of the playlist
+    :type playlist_id: str
+    :param tracks: A dictionary of tracks, track:artist
+    :type tracks: dict[str, str]
+    """
     uris = []
     for track, artist in tracks.items():
         data = client.search_track(track, artist)

@@ -1,9 +1,5 @@
-import requests
-from bs4 import BeautifulSoup
-from datetime import datetime
 from spotify import SpotifyClient
 from ui import *
-import time
 
 
 def main():

@@ -68,7 +68,18 @@ class SpotifyClient:
 
         return data
 
-    def add_to_playlist(self, playlist_id: str, uris: list[str]):
+    def add_to_playlist(self, playlist_id: str, uris: list[str]) -> dict:
+        """
+        Add tracks to a playlist.
+
+        :param playlist_id: The `ID` of the playlist. 
+        :type playlist_id: str
+        :param uris: A list of URIs of tracks. 
+        :type uris: list[str]
+
+        :return: `response.json()`
+        :rtype: dict[Any, Any]
+        """
         print("Adding to playlist...")
         endpoint = f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks"
         query = {
@@ -80,7 +91,6 @@ class SpotifyClient:
             url=endpoint, json=query, headers=self.auth.auth_headers)
         response.raise_for_status()
         data = response.json()
-        save_to_json(data)
         print("Successfully added to playlist!")
         return data
 
@@ -88,6 +98,18 @@ class SpotifyClient:
                      track: str,
                      artist: str | None = None,
                      limit: int = 1) -> dict:
+        """
+        Search a track from spotify.
+
+        :param track: Track name.
+        :type track: str
+        :param artist: Artist of the track.
+        :type artist: str | None
+        :param limit: How many responses to get? 
+        :type limit: int
+        :return: `response.json()`
+        :rtype: dict[Any, Any]
+        """
         print("\nSearching...")
 
         q = f"track:{track}"
@@ -103,12 +125,12 @@ class SpotifyClient:
         response = requests.get(
             url=endpoint, params=query, headers=self.auth.auth_headers)
         response.raise_for_status()
-        save_to_json(response.json())
         data = response.json()["tracks"]["items"][0]
 
         artists = data["artists"]
         if data:
             print("Found track!")
+            print(f"Track: {data["name"]}")
             print(
                 f"Artist: {", ".join([artist['name'] for artist in artists])}")
             print(f"Album: {data["album"]["name"]}")
