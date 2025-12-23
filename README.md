@@ -1,1 +1,56 @@
-# 100-days-of-code
+# 100 Days of Code - Python
+
+## Beginner
+
+- [Day 1 - Working with Variables in Python to Mange Data](./Day%20001)
+- [Day 2 - Understanding Data Types and How to Manipulate Strings](./Day%20002)
+- [Day 3 - Control Flow and Logical Operators](./Day%20003)
+- [Day 4 - Randomisation and Python Lists](./Day%20004)
+- [Day 5 - Python Loops](./Day%20005)
+- [Day 7 - Hangman](./Day%20007)
+- [Day 8 - Function Parameters & Caesar Cipher](./Day%20008)
+- [Day 9 - Dictionaries, Nesting and the Secret Auction](./Day%20009)
+- [Day 10 - Functions with Outputs](./Day%20010)
+- [Day 11 - The Blackjack Capstone Project](./Day%20011)
+- [Day 12 - Scope & Number Guessing Game](./Day%20012)
+- [Day 14 - Higher Lower Game Project](./Day%20014)
+
+## Intermediate
+
+- [Day 15 - Local Development Environment Setup & the Coffee Machine](./Day%20015)
+- [Day 16 - Object Oriented Programming (OOP)](./Day%20016)
+- [Day 17 - The Quiz Project & the Benefits of OOP](./Day%20017)
+- [Day 18 - Turtle & the Graphical User Interface (GUI)](./Day%20018)
+- [Day 19 - Instances, State and Higher Order Functions](./Day%20019)
+- [Day 20 - Build the Snake Game Part 1 Animation & Coordinates](./Day%20020)
+- [Day 21 - Build the Snake Game Part 2 Inheritance & List Slicing](./Day%20021)
+- [Day 22 - Build Pong The Famous Arcade Game](./Day%20022)
+- [Day 23 - The Turtle Crossing Capstone Project](./Day%20023)
+- [Day 24 - Files, Directories and Paths](./Day%20024)
+- [Day 25 - Working with CSV Data and the Pandas Library](./Day%20025)
+- [Day 26 - List Comprehension and the NATO Alphabet](./Day%20026)
+- [Day 27 - Tkinter, args, kwargs and Creating GUI Programs](./Day%20027)
+- [Day 28 - Tkinter, Dynamic Typing and the Pomodoro GUI Application](./Day%20028)
+- [Day 29 - Building a Password Manager GUI App with Tkinter](./Day%20029)
+- [Day 30 - Errors, Exceptions and JSON Data Improving the Password](./Day%20030)
+- [Day 31 - Flash Card App Capstone Project](./Day%20031)
+
+## Intermediate+
+
+- [Day 32 - Send Email (smtplib) & Manage Dates (datetime)](./Day%20032)
+- [Day 33 - API Endpoints & API Parameters - ISS Overhead Notifier](./Day%20033)
+- [Day 34 - API Practice - Creating a GUI Quiz App](./Day%20034)
+- [Day 35 - Keys, Authentication & Environment Variables Send SMS](./Day%20035)
+- [Day 36 - Stock Trading News Alert Project](./Day%20036)
+- [Day 37 - Habit Tracking Project API Post Requests & Headers](./Day%20037)
+- [Day 38 - Workout Tracking Using Google Sheets](./Day%20038)
+- [Day 39 - Capstone Part 1 Flight Deal Finder](./Day%20039)
+- [Day 40 - Capstone Part 2 Flight Deal Finder](./Day%20040/)
+- [Day 41 - Web Foundation - Introduction to HTML](./Day%20041)
+- [Day 42 - Web Foundation - Intermediate HTML](./Day%20042)
+- [Day 43 - Web Foundation - Introduction to CSS](./Day%20043)
+- [Day 44 - Web Foundation - Intermediate CSS](./Day%20044)
+- [Day 45 - Web Scraping with Beautiful Soup](./Day%20045)
+- [Day 46 - Create a Spotify Playlist using the Musical Time Machine](./Day%20046)
+- [Day 47 - Create an Automated Amazon Price Tracker](./Day%20047)
+- [Day 48 - Selenium Webdriver Browser and Game Playing Bot](./Day%20048)
