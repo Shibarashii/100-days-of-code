@@ -5,6 +5,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 from textwrap import dedent
 from datetime import datetime
+from typing import Callable
 import time as t
 
 options = webdriver.ChromeOptions()
@@ -26,22 +27,37 @@ ACCOUNT_PASSWORD = "printhelloworld123"
 wait = WebDriverWait(driver, timeout=2)
 
 
+def retry(func: Callable, retries=7, description=None, *args):
+    for i in range(retries):
+        print(f"Trying {func.__name__}. Attempt: {i + 1}")
+        try:
+            return func(*args)
+        except Exception:
+            if i == retries - 1:
+                raise
+            t.sleep(1)
+
+
 def login():
     login_button = wait.until(ec.element_to_be_clickable(
-        (By.CLASS_NAME, "Home_heroButton__3eeI3")))
+        (By.ID, "login-button")))
     login_button.click()
 
     email_input = wait.until(
         ec.presence_of_element_located((By.NAME, "email")))
+    email_input.clear()
     email_input.send_keys(ACCOUNT_EMAIL)
 
     password_input = wait.until(
         ec.presence_of_element_located((By.NAME, "password")))
+    password_input.clear()
     password_input.send_keys(ACCOUNT_PASSWORD)
 
     submit_button = wait.until(
         ec.element_to_be_clickable((By.ID, "submit-button")))
     submit_button.click()
+
+    wait.until(ec.presence_of_element_located((By.ID, "schedule-page")))
 
 
 counter = {
@@ -157,7 +173,8 @@ def verify_bookings():
 
 
 def main():
-    login()
+    retry(login)
+
     date_h1_element = wait.until(ec.presence_of_element_located(
         (By.CSS_SELECTOR, "h1[class^='Schedule']"))).text
 
@@ -178,9 +195,8 @@ def main():
         if day == days_of_week[day_tomorrow_in_site]:
             days_to_book[i] = "tomorrow"
 
-    print(days_to_book)
-    book_classes(days_to_book)
-    verify_bookings()
+    retry(book_classes, 7, None, days_to_book)
+    retry(verify_bookings)
 
 
 if __name__ == "__main__":
